@@ -20,17 +20,23 @@ import org.jdom.output.XMLOutputter;
 /**
  * Hello world!
  *
+ * @todo the users can't modify own profile datas
+ * @todo migrate the user first name
+ * @todo EJB page links?
  */
 public class App {
 
     private File oldFile;
     private File newDir;
     private Document descriptor;
+    private Document xwikiAllGroups;
+    private Element groupTemplate;
     private Map<String, Element> userCache = new HashMap();
     private Map<String, Element> snipCache = new HashMap();
     private Map<String, List<Element>> commentsCache = new HashMap<String, List<Element>>();
     private Map<String, String> snipNameCache = new HashMap();
     private Transformation syntaxTransformation;
+    int userNo = 3;
 
     public App(File oldFile, File newDir) {
         this.oldFile = oldFile;
@@ -45,6 +51,14 @@ public class App {
             File packageTemplate = new File("src/main/template/package.xml");
             SAXBuilder builder = new SAXBuilder();
             descriptor = builder.build(packageTemplate);
+
+            //initialize group file
+            File groupFile = new File("src/main/template/XWikiAllGroup.xml");
+            xwikiAllGroups = builder.build(groupFile).getDocument();
+            List<Element> groupObjects = xwikiAllGroups.getRootElement().getChildren("object");
+            for (Element e : groupObjects) {
+                groupTemplate = e;
+            }
 
             Document d = builder.build(oldFile);
             Element root = d.getRootElement();
@@ -84,8 +98,10 @@ public class App {
                     migrateSnip(e);
                 }
             }
+            writeFile("XWiki", "XWikiAllGroup", xwikiAllGroups);
             XMLOutputter outputter = new XMLOutputter();
             outputter.output(descriptor, new FileWriter(new File(newDir, "package.xml")));
+
 
         } catch (JDOMException ex) {
             ex.printStackTrace();
@@ -139,14 +155,14 @@ public class App {
 
             //copy properties
             DomCopier copier = new DomCopier(oldRoot, newRoot);
-            copier.copyText("name", "name",new Transformation() {
+            copier.copyText("name", "name", new Transformation() {
 
                 @Override
                 public String transform(String source) {
                     return source.replaceAll("/", "");
                 }
             });
-            
+
             copier.copyText("name", "title");
             copier.copyText("mUser", "contentAuthor", xwikiPrefix);
             copier.copyText("mUser", "author", xwikiPrefix);
@@ -214,8 +230,20 @@ public class App {
 
             copier.copyText("cTime", "creationDate");
             copier.copyText("mTime", "date");
+
+            //replace object name tags
+            List<Element> objects = newRoot.getChildren("object");
+            for (Element object : objects) {
+                object.getChild("name").setText("XWiki." + name);
+            }
+
             writeFile("XWiki", name, d);
 
+            //add user to XWikiAllGroup file
+            Element e = (Element) groupTemplate.clone();
+            e.getChild("property").getChild("member").setText("XWiki." + name);
+            e.getChild("number").setText("" + userNo++);
+            xwikiAllGroups.getRootElement().addContent(e);
 
             System.out.println("User:" + name + " migrated");
         } catch (JDOMException ex) {
