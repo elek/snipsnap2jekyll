@@ -111,7 +111,7 @@ public class App {
     }
 
     public static void main(String[] args) {
-        new App(new File("/home/elek/jhacks.snip"), new File("/tmp/xwiki")).migrate();
+        new App(new File( args.length < 1 ? "/home/elek/jhacks.snip" : args[0]), new File(args.length < 2 ? "/tmp/xwiki" : args[1])).migrate();
 
     }
 
