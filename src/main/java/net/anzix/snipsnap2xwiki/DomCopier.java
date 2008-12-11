@@ -33,6 +33,10 @@ public class DomCopier {
     public void copyText(String from, String to, Transformation transform) {
         String string = oldRoot.getChildText(from);
         Element ne = newRoot.getChild(to);
+        if(ne == null) {
+        	ne = new Element(to);
+        	newRoot.addContent(ne);
+        }
         ne.setText(transform.transform(string));
     }
 

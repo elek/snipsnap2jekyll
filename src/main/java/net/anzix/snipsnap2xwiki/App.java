@@ -174,6 +174,17 @@ public class App {
 
             copier.copyText("content", "content", syntaxTransformation);
 
+            for(Element attachemnt : (List<Element>)oldRoot.getChild("attachments").getChildren("attachment")) {
+            	Element newAttachemnt = new Element("attachment");
+            	newRoot.addContent(newAttachemnt);
+            	DomCopier attahcmentCopier = new DomCopier(attachemnt, newAttachemnt);
+            	attahcmentCopier.copyText("name", "filename");
+            	attahcmentCopier.copyText("size", "filesize");
+            	attahcmentCopier.copyText("date", "date");
+            	attahcmentCopier.copyText("data", "content");
+            	newAttachemnt.setAttribute("version", "1.0");
+            }
+            
             //comments?
             if (commentsCache.get(name) != null) {
                 for (Element commentSnipElement : commentsCache.get(name)) {
