@@ -90,7 +90,7 @@ public class App {
                     userCache.put(login, e);
                 }
             }
-            syntaxTransformation = new SnipSnap2XWiki1(snipNameCache);
+            syntaxTransformation = new CompositeTransformation( new Transformation[] { new SnipSnap2XWiki1(snipNameCache), new ImageTransformation() });
 
             //migration
             for (Element e : childs) {
