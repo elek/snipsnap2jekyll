@@ -182,7 +182,9 @@ public class App {
             	attahcmentCopier.copyText("size", "filesize");
             	attahcmentCopier.copyText("date", "date");
             	attahcmentCopier.copyText("data", "content");
-            	newAttachemnt.setAttribute("version", "1.0");
+            	addTag(newAttachemnt, "version", "1.0");
+            	addTag(newAttachemnt, "author", "XWiki.Admin");
+            	addTag(newAttachemnt, "comment", "migrated from snipsnap");
             }
             
             //comments?
@@ -229,7 +231,13 @@ public class App {
         }
     }
 
-    private void migrateUser(Element oldRoot, Element userRoot, String name) {
+    private void addTag(Element parent, String name, String value) {
+    	Element element = new Element(name);
+    	element.setText(value);
+    	parent.addContent(element);
+	}
+
+	private void migrateUser(Element oldRoot, Element userRoot, String name) {
         try {
             SAXBuilder builder = new SAXBuilder();
             Document d = builder.build(new File("src/main/template/User.xml"));
