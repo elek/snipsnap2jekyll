@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.anzix.snipsnap2xwiki.transformation.CompositeTransformation;
+import net.anzix.snipsnap2xwiki.transformation.ImageTransformation;
+import net.anzix.snipsnap2xwiki.transformation.Transformation;
 import org.jdom.Element;
 
 /**

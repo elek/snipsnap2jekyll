@@ -9,6 +9,8 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import net.anzix.snipsnap2xwiki.transformation.AddPrefix;
+import net.anzix.snipsnap2xwiki.transformation.Transformation;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -19,13 +21,15 @@ import org.jdom.input.SAXBuilder;
  */
 public class SnipMigrator extends AbstractObjectMigrator {
 
+    SAXBuilder builder = new SAXBuilder();
+
     public SnipMigrator(MigrationContext context) {
         super(context);
     }
 
     @Override
     protected boolean includeInMigration(Element e) {
-        if (e.getName().equals("user")){
+        if (e.getName().equals("user")) {
             return false;
         }
         String name = e.getChildText("name");
@@ -49,7 +53,7 @@ public class SnipMigrator extends AbstractObjectMigrator {
 
         String name = oldRoot.getChildText("name");
 
-        SAXBuilder builder = new SAXBuilder();
+
         Document d = builder.build(new File("src/main/template/Page.xml"));
 
         //open template
@@ -100,42 +104,12 @@ public class SnipMigrator extends AbstractObjectMigrator {
             addTag(newAttachemnt, "comment", "migrated from snipsnap");
         }
 
-        //comments?
-        if (getContext().getCommentsCache().get(name) != null) {
-            for (Element commentSnipElement : getContext().getCommentsCache().get(name)) {
-                Document commentDoc = builder.build(new File("src/main/template/comment.xml"));
-                Element commentRoot = (Element) commentDoc.getRootElement().clone();
-
-                //author of comment
-                Element p = new Element("property");
-                Element t = new Element("author");
-                p.addContent(t);
-                t.addContent("XWiki." + commentSnipElement.getChildText("cUser"));
-                commentRoot.addContent(p);
-
-                //text of comment
-                p = new Element("property");
-                t = new Element("comment");
-                p.addContent(t);
-                t.addContent(getContext().getSyntaxTransformation().transform(commentSnipElement.getChildText("content")));
-                commentRoot.addContent(p);
-
-                //date of comment
-                p = new Element("property");
-                t = new Element("date");
-                p.addContent(t);
-                Date createdTime = new Date(Long.parseLong(commentSnipElement.getChildText("cTime")));
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd H:m:s.S");
-                t.addContent(dateFormatter.format(createdTime));
-                commentRoot.addContent(p);
-
-                newRoot.addContent(commentRoot);
-            }
-
-        }
-
+        copyComments(name, newRoot);
+        fixObjextNames(name, newRoot);
+        
         //write output
         writeFile("Main", name, d);
+        getContext().pageMigratedSuccesfully("Main."+name);
 
     }
 }

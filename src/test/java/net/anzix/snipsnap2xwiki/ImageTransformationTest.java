@@ -2,6 +2,7 @@ package net.anzix.snipsnap2xwiki;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import net.anzix.snipsnap2xwiki.transformation.ImageTransformation;
 
 public class ImageTransformationTest extends TestCase {
 

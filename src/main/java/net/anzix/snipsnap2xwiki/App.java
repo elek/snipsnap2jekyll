@@ -44,7 +44,8 @@ public class App {
             new UserMigrator(context).migrate(snipSnapDumpRoot);
             new SnipMigrator(context).migrate(snipSnapDumpRoot);
             new NewsMigrator(context).migrate(snipSnapDumpRoot);
-            //should be run after the user migration
+
+//            //should be run after the user migration
             new GroupFileMigrator(context).migrate(snipSnapDumpRoot);
 
             //alwasy shoud be the last step
@@ -58,7 +59,7 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
-        new App(new File(args.length < 1 ? "/home/elek/jhacks.snip" : args[0]), new File(args.length < 2 ? "/tmp/xwiki" : args[1])).migrate();
+        new App(new File(args.length < 1 ? "/home/elek/jhacks-2.snip" : args[0]), new File(args.length < 2 ? "/tmp/xwiki" : args[1])).migrate();
 
     }
 }

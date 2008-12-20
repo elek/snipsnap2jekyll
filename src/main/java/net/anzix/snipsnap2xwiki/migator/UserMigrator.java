@@ -24,12 +24,12 @@ public class UserMigrator extends AbstractObjectMigrator {
 
     @Override
     protected boolean includeInMigration(Element e) {
-        return getContext().getUserCache().containsKey(e.getChildText("name"));
+        return getContext().getUserCache().containsKey(e.getChildText("login")) && e.getName().equals("user");
     }
 
     @Override
     public void migrateObject(Element userRoot) throws Exception {
-        String name = userRoot.getChildText("name");
+        String name = userRoot.getChildText("login");
 
         SAXBuilder builder = new SAXBuilder();
         Document d = builder.build(new File("src/main/template/User.xml"));
@@ -42,11 +42,7 @@ public class UserMigrator extends AbstractObjectMigrator {
         copier.copyText("cTime", "creationDate");
         copier.copyText("mTime", "date");
 
-        //replace object name tags
-        List<Element> objects = newRoot.getChildren("object");
-        for (Element object : objects) {
-            object.getChild("name").setText("XWiki." + name);
-        }
+        fixObjextNames(name, newRoot);
 
         //add rights to modify own profile
         modifyProperty(findLastObject(newRoot, "XWiki.XWikiRights"), "users", "XWiki." + name);

@@ -31,7 +31,7 @@ public class PackageFileMigrator extends AbstractMigrator {
         }
 
         for (String userName : getContext().getPagesMigrated()) {
-            addPageToDescriptorFile(descriptor, "Main." + userName);
+            addPageToDescriptorFile(descriptor, userName);
 
         }
         XMLOutputter outputter = new XMLOutputter();

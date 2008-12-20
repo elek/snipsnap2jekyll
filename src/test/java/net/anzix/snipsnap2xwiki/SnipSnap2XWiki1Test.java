@@ -37,21 +37,12 @@ public class SnipSnap2XWiki1Test extends TestCase {
      * Test of transform method, of class SnipSnap2XWiki1.
      */
     public void testTransform() {
-        Set<String> users = new HashSet() {
 
-            {
-                add("asd");
-            }
-        };
-
-        Map<String, String> pages = new HashMap() {
-
-            {
-                put("oracle", "Oracle");
-                put("j2ee", "j2ee");
-            }
-        };
-        SnipSnap2XWiki1 transform = new SnipSnap2XWiki1(pages, users);
+        MigrationContext context = new MigrationContext();
+        context.getUserCache().put("asd", null);
+        context.getSnipNameCache().put("oracle", "Oracle");
+        context.getSnipNameCache().put("j2ee", "j2ee");
+        SnipSnap2XWiki1 transform = new SnipSnap2XWiki1(context);
         assertEquals("valami [Oracle] valami [j2ee]", transform.transform("valami [oracle] valami [J2EE]"));
         assertEquals("valami [java 1\\.5]", transform.transform("valami [java 1.5]"));
     }

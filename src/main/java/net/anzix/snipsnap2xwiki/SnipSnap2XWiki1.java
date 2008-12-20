@@ -4,6 +4,7 @@
  */
 package net.anzix.snipsnap2xwiki;
 
+import net.anzix.snipsnap2xwiki.transformation.Transformation;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
