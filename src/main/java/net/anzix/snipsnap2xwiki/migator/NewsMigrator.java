@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import net.anzix.snipsnap2xwiki.transformation.AddPrefix;
 import net.anzix.snipsnap2xwiki.DomCopier;
 import net.anzix.snipsnap2xwiki.MigrationContext;
+import net.anzix.snipsnap2xwiki.transformation.CompositeTransformation;
 import net.anzix.snipsnap2xwiki.transformation.ReplaceTransformation;
 import net.anzix.snipsnap2xwiki.transformation.Transformation;
 import org.jdom.Document;
@@ -68,9 +69,22 @@ public class NewsMigrator extends AbstractObjectMigrator {
         copier.copyText("mTime", "date");
         copier.copyText("mTime", "contentUpdateDate");
 
-        copier.copyTextToObjectProperty("content", "XWiki.ArticleClass[0]", "content", getContext().getSyntaxTransformation());
+        copier.copyTextToObjectProperty("content", "XWiki.ArticleClass[0]", "content",
+                new CompositeTransformation(
+                new Transformation[]{
+                    getContext().getSyntaxTransformation(),
+                    new Transformation() {
 
-        copier.copyTextToObjectProperty("name", "XWiki.ArticleClass[0]", "title", new ReplaceTransformation(title));
+                        @Override
+                        public String transform(String source) {
+                            return "asd";
+                            //return source.substring(source.indexOf("\n"));
+                        }
+                    }
+                }));
+
+        //copier.copyTextToObjectProperty("name", "XWiki.ArticleClass[0]", "title", new ReplaceTransformation(title));
+        copier.copyTextToObjectProperty("name", "XWiki.ArticleClass[0]", "title", new ReplaceTransformation("title"));
 
         copyComments(name, newRoot);
         fixObjextNames(newName, newRoot);

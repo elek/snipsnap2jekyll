@@ -4,6 +4,7 @@
  */
 package net.anzix.snipsnap2xwiki;
 
+import net.anzix.snipsnap2xwiki.transformation.SnipSnap2XWiki1;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

@@ -7,6 +7,7 @@ import net.anzix.snipsnap2xwiki.migator.NewsMigrator;
 import net.anzix.snipsnap2xwiki.migator.PackageFileMigrator;
 import net.anzix.snipsnap2xwiki.migator.SnipMigrator;
 import net.anzix.snipsnap2xwiki.migator.UserMigrator;
+import net.anzix.snipsnap2xwiki.transformation.MacroListTransformation;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -20,6 +21,7 @@ import org.jdom.input.SAXBuilder;
 public class App {
 
     private File oldFile;
+
     private File newDir;
 
     public App(File oldFile, File newDir) {
@@ -42,7 +44,10 @@ public class App {
             new File(newDir, "XWiki").mkdirs();
 
             new UserMigrator(context).migrate(snipSnapDumpRoot);
-            new SnipMigrator(context).migrate(snipSnapDumpRoot);
+            SnipMigrator snipMigrator = new SnipMigrator(context);
+            snipMigrator.setMigrateAttachments(false);
+            snipMigrator.migrate(snipSnapDumpRoot);
+
             new NewsMigrator(context).migrate(snipSnapDumpRoot);
 
 //            //should be run after the user migration
@@ -51,6 +56,9 @@ public class App {
             //alwasy shoud be the last step
             new PackageFileMigrator(context).migrate(snipSnapDumpRoot);
 
+            for (String macro : MacroListTransformation.macros) {
+                System.out.println(macro);
+            }
         } catch (JDOMException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {

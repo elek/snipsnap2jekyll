@@ -11,8 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.anzix.snipsnap2xwiki.transformation.CompositeTransformation;
-import net.anzix.snipsnap2xwiki.transformation.ImageTransformation;
+import net.anzix.snipsnap2xwiki.transformation.DefaultTextTransformation;
 import net.anzix.snipsnap2xwiki.transformation.Transformation;
 import org.jdom.Element;
 
@@ -23,22 +22,29 @@ import org.jdom.Element;
 public class MigrationContext {
 
     private Transformation syntaxTransformation;
+
     private File outputDir = new File("/tmp/xwiki");
+
     private Map<String, Element> userCache = new HashMap();
+
     private Map<String, Element> snipCache = new HashMap();
+
     private Map<String, List<Element>> commentsCache = new HashMap<String, List<Element>>();
+
     private Map<String, String> snipNameCache = new HashMap();
+
     /**
      * User names whcih migrated successfully
      */
     private Set<String> usersMigrated = new HashSet();
+
     /**
      * Page names whcih migrated successfully
      */
     private Set<String> pagesMigrated = new HashSet();
 
     public void init(Element root) {
-        syntaxTransformation = new CompositeTransformation(new Transformation[]{new SnipSnap2XWiki1(this), new ImageTransformation()});
+        syntaxTransformation = new DefaultTextTransformation(this);
         List<Element> childs = root.getChildren();
         for (Element e : childs) {
             if (e.getName().equals("snip")) {

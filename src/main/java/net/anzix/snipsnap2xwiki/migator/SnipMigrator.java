@@ -6,14 +6,13 @@ package net.anzix.snipsnap2xwiki.migator;
 
 import net.anzix.snipsnap2xwiki.*;
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import net.anzix.snipsnap2xwiki.transformation.AddPrefix;
 import net.anzix.snipsnap2xwiki.transformation.Transformation;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
 
 /**
  *
@@ -21,28 +20,35 @@ import org.jdom.input.SAXBuilder;
  */
 public class SnipMigrator extends AbstractObjectMigrator {
 
-    SAXBuilder builder = new SAXBuilder();
+    private boolean migrateAttachments = true;
+
+    private Set<String> ignorePages;
 
     public SnipMigrator(MigrationContext context) {
         super(context);
+        ignorePages = new HashSet();
+        ignorePages.add("start");
+        ignorePages.add("start2");
+        ignorePages.add("sandbox");
+        ignorePages.add("snips-by-user");
     }
 
     @Override
     protected boolean includeInMigration(Element e) {
+
         if (e.getName().equals("user")) {
             return false;
         }
         String name = e.getChildText("name");
         if (name.equals("admin")) {
             return false;
-        }
-        if (name.startsWith("comment") || name.startsWith("start/") || name.startsWith("topics/")) {
+        } else if (name.startsWith("comment") || name.startsWith("start/") || name.startsWith("topics/")) {
             return false;
-        }
-        if (name.startsWith("SnipSnap")) {
+        } else if (name.startsWith("SnipSnap") || name.startsWith("snipsnap")) {
             return false;
-        }
-        if (getContext().getUserCache().containsKey(name)) {
+        } else if (ignorePages.contains(name)) {
+            return false;
+        } else if (getContext().getUserCache().containsKey(name)) {
             return false;
         }
         return true;
@@ -90,26 +96,31 @@ public class SnipMigrator extends AbstractObjectMigrator {
         copier.copyText("mTime", "contentUpdateDate");
 
         copier.copyText("content", "content", getContext().getSyntaxTransformation());
-
-        for (Element attachemnt : (List<Element>) oldRoot.getChild("attachments").getChildren("attachment")) {
-            Element newAttachemnt = new Element("attachment");
-            newRoot.addContent(newAttachemnt);
-            DomCopier attahcmentCopier = new DomCopier(attachemnt, newAttachemnt);
-            attahcmentCopier.copyText("name", "filename");
-            attahcmentCopier.copyText("size", "filesize");
-            attahcmentCopier.copyText("date", "date");
-            attahcmentCopier.copyText("data", "content");
-            addTag(newAttachemnt, "version", "1.0");
-            addTag(newAttachemnt, "author", "XWiki.Admin");
-            addTag(newAttachemnt, "comment", "migrated from snipsnap");
+        if (migrateAttachments) {
+            for (Element attachemnt : (List<Element>) oldRoot.getChild("attachments").getChildren("attachment")) {
+                Element newAttachemnt = new Element("attachment");
+                newRoot.addContent(newAttachemnt);
+                DomCopier attahcmentCopier = new DomCopier(attachemnt, newAttachemnt);
+                attahcmentCopier.copyText("name", "filename");
+                attahcmentCopier.copyText("size", "filesize");
+                attahcmentCopier.copyText("date", "date");
+                attahcmentCopier.copyText("data", "content");
+                addTag(newAttachemnt, "version", "1.0");
+                addTag(newAttachemnt, "author", "XWiki.Admin");
+                addTag(newAttachemnt, "comment", "migrated from snipsnap");
+            }
         }
 
         copyComments(name, newRoot);
         fixObjextNames(name, newRoot);
-        
+
         //write output
         writeFile("Main", name, d);
-        getContext().pageMigratedSuccesfully("Main."+name);
+        getContext().pageMigratedSuccesfully("Main." + name);
 
+    }
+
+    public void setMigrateAttachments(boolean migrateAttachments) {
+        this.migrateAttachments = migrateAttachments;
     }
 }
