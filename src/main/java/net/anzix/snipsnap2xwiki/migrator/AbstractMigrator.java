@@ -2,19 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.anzix.snipsnap2xwiki.migator;
+package net.anzix.snipsnap2xwiki.migrator;
 
-import net.anzix.snipsnap2xwiki.*;
+import net.anzix.snipsnap2xwiki.MigrationContext;
+import org.jdom.Element;
+
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
 
 /**
- *
  * @author elek
  */
 public abstract class AbstractMigrator {
@@ -62,11 +59,8 @@ public abstract class AbstractMigrator {
         throw new IllegalArgumentException("No such proeprty: " + object + "+" + propertyName);
     }
 
-    protected void writeFile(String space, String name, Document content) throws IOException {
-        //write output
-        XMLOutputter outputter = new XMLOutputter();
-        outputter.output(content, new FileWriter(new File(new File(context.getOutputDir(), space), name + ".xml")));
-    //write to package descriptor
+    protected File getFile(String space, String name) throws IOException {
+        return new File(new File(context.getOutputDir(), space), name + ".md");
 
     }
 

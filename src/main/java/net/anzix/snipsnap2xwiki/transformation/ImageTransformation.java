@@ -8,14 +8,36 @@ package net.anzix.snipsnap2xwiki.transformation;
  * to <pre>
  * {image:hirig.gif}
  * </pre>
- * @author kocka
  *
+ * @author kocka
  */
-public class ImageTransformation implements Transformation {
+public class ImageTransformation extends MacroTransformation {
 
-	@Override
-	public String transform(String source) {
-		return source.replaceAll("\\{image:img=([a-zA-Z]*/)*", "{image:");
-	}
 
+    public ImageTransformation() {
+        super("image");
+    }
+
+    @Override
+    public String replace(String[] args) {
+        String image = "";
+        String link = "";
+        String alt = "image";
+        for (String arg : args) {
+            if (arg.startsWith("img=")) {
+                image = arg.substring("img=".length());
+            } else if (arg.startsWith("link=")) {
+                link = arg.substring("link=".length());
+            } else if (arg.startsWith("alt=")) {
+                alt = arg.substring("alt=".length());
+            } else if (arg.startsWith("http:")) {
+                image = arg;
+            } else if (arg.endsWith(".gif") || arg.endsWith(".png")) {
+                image = arg;
+            } else {
+                throw new UnsupportedOperationException("Unknown image parameter: >" + arg + "<");
+            }
+        }
+        return "![" + alt + "](" + image + ")" + (link.length() > 0 ? "(" + link + ")" : "");
+    }
 }

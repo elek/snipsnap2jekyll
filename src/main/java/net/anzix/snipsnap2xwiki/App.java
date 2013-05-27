@@ -1,64 +1,67 @@
 package net.anzix.snipsnap2xwiki;
 
-import java.io.File;
-import java.io.IOException;
-import net.anzix.snipsnap2xwiki.migator.GroupFileMigrator;
-import net.anzix.snipsnap2xwiki.migator.NewsMigrator;
-import net.anzix.snipsnap2xwiki.migator.PackageFileMigrator;
-import net.anzix.snipsnap2xwiki.migator.SnipMigrator;
-import net.anzix.snipsnap2xwiki.migator.UserMigrator;
-import net.anzix.snipsnap2xwiki.transformation.MacroListTransformation;
+import net.anzix.snipsnap2xwiki.migrator.SnipMigrator;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
- * SnipSnap2XWiki migration spaghetti edition
+ * SnipSnap2Jekyll migration spaghetti edition.
  *
- * @todo the users can't modify own profile datas
  */
 public class App {
 
+    @Argument(index = 0, metaVar = "dump_file", usage = "SnipSnap wiki dump file", required = true)
     private File oldFile;
 
+    @Argument(index = 1, metaVar = "dest_dir", usage = "Destination directory", required = true)
     private File newDir;
-
-    public App(File oldFile, File newDir) {
-        this.oldFile = oldFile;
-        this.newDir = newDir;
-    }
 
     public void migrate() throws Exception {
         try {
             SAXBuilder builder = new SAXBuilder();
-
             Document d = builder.build(oldFile);
+//            Document d = builder.build(new InputStreamReader(new InputStream() {
+//                int i=0;
+//                @Override
+//                public int read() throws IOException {
+//                    if (i++ % 1024 == 0){
+//                        //System.out.println(i/1024);
+//                    }
+//                    int ch = st.read();
+//                    System.out.println(ch +" "+(char)ch);
+//                    if ((ch & 0xC0) == 0xA0) {
+//                        System.out.println("a");
+//                    }
+//                    return ch;
+//                }
+//
+//            }));
             Element snipSnapDumpRoot = d.getRootElement();
 
-            MigrationContext context = new MigrationContext();
+            MigrationContext context = new MigrationContext(newDir);
             context.init(snipSnapDumpRoot);
 
-
-            new File(newDir, "Main").mkdirs();
-            new File(newDir, "XWiki").mkdirs();
-
-            new UserMigrator(context).migrate(snipSnapDumpRoot);
+            //Migrate wiki pages
             SnipMigrator snipMigrator = new SnipMigrator(context);
             snipMigrator.setMigrateAttachments(false);
             snipMigrator.migrate(snipSnapDumpRoot);
 
-            new NewsMigrator(context).migrate(snipSnapDumpRoot);
+            //new NewsMigrator(context).migrate(snipSnapDumpRoot);
 
 //            //should be run after the user migration
-            new GroupFileMigrator(context).migrate(snipSnapDumpRoot);
+            //new GroupFileMigrator(context).migrate(snipSnapDumpRoot);
 
             //alwasy shoud be the last step
-            new PackageFileMigrator(context).migrate(snipSnapDumpRoot);
+            //new PackageFileMigrator(context).migrate(snipSnapDumpRoot);
 
-            for (String macro : MacroListTransformation.macros) {
-                System.out.println(macro);
-            }
         } catch (JDOMException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
@@ -67,7 +70,17 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
-        new App(new File(args.length < 1 ? "/home/elek/jhacks-2.snip" : args[0]), new File(args.length < 2 ? "/tmp/xwiki" : args[1])).migrate();
+        App dump = new App();
+        CmdLineParser parser = new CmdLineParser(dump);
+        try {
+            parser.parseArgument(args);
+            dump.migrate();
+        } catch (CmdLineException ex) {
+            System.out.println("ERROR: " + ex.getMessage() + "\n");
+            parser.printSingleLineUsage(System.out);
+            System.out.println("\n\n");
+            parser.printUsage(System.out);
+        }
 
     }
 }

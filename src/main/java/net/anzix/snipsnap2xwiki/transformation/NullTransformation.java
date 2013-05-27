@@ -5,6 +5,8 @@
 
 package net.anzix.snipsnap2xwiki.transformation;
 
+import net.anzix.snipsnap2xwiki.Page;
+
 /**
  *
  * @author elek
@@ -12,7 +14,7 @@ package net.anzix.snipsnap2xwiki.transformation;
 public class NullTransformation implements Transformation{
 
     @Override
-    public String transform(String source) {
+    public String transform(String source, Page page) {
         return source;
     }
 

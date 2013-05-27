@@ -4,9 +4,10 @@
  */
 package net.anzix.snipsnap2xwiki.transformation;
 
+import net.anzix.snipsnap2xwiki.Page;
+
 /**
- *
- * @author elek
+ * Replace value with an other.
  */
 public class ReplaceTransformation implements Transformation {
 
@@ -17,7 +18,7 @@ public class ReplaceTransformation implements Transformation {
     }
 
     @Override
-    public String transform(String source) {
+    public String transform(String source, Page page) {
         return replacementValue;
     }
 }

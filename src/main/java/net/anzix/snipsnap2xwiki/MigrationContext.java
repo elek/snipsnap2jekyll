@@ -4,18 +4,17 @@
  */
 package net.anzix.snipsnap2xwiki;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import net.anzix.snipsnap2xwiki.transformation.DefaultTextTransformation;
 import net.anzix.snipsnap2xwiki.transformation.Transformation;
 import org.jdom.Element;
 
+import java.io.File;
+import java.util.*;
+
 /**
+ *  Context of the migrations.
+ *
+ *  Contains list and indexes of the user/snip pages.
  *
  * @author elek
  */
@@ -33,6 +32,8 @@ public class MigrationContext {
 
     private Map<String, String> snipNameCache = new HashMap();
 
+    private Set<String> missingPages = new HashSet<>();
+
     /**
      * User names whcih migrated successfully
      */
@@ -43,10 +44,16 @@ public class MigrationContext {
      */
     private Set<String> pagesMigrated = new HashSet();
 
+    public MigrationContext(File outputDir) {
+        this.outputDir = outputDir;
+    }
+
     public void init(Element root) {
         syntaxTransformation = new DefaultTextTransformation(this);
         List<Element> childs = root.getChildren();
+        int i = 0;
         for (Element e : childs) {
+            System.out.println(i++);
             if (e.getName().equals("snip")) {
                 String snipName = e.getChildText("name");
                 snipNameCache.put(snipName.toLowerCase(), snipName);
@@ -70,6 +77,7 @@ public class MigrationContext {
                 userCache.put(login, e);
             }
         }
+        System.out.println("Sinp cached:" + snipCache.size());
     }
 
     public Map<String, List<Element>> getCommentsCache() {
@@ -130,5 +138,13 @@ public class MigrationContext {
 
     public Transformation getSyntaxTransformation() {
         return syntaxTransformation;
+    }
+
+    public void addMissingPage(String name) {
+        missingPages.add(name);
+    }
+
+    public Set<String> getMissingPages() {
+        return missingPages;
     }
 }
