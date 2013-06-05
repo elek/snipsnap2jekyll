@@ -18,7 +18,10 @@ public class TitleExtractor extends RegExpTransformation {
 
     @Override
     public String replace(Matcher m, Page page) {
-        page.addMeta("title", m.group(1));
+        String title = m.group(1);
+        title = title.replaceAll("\\[([^\\]|]+)(?:|[^\\]]+)?\\]", "$1");
+        title = title.replaceAll(":", "");
+        page.addMeta("title", title);
         return m.group(2);
     }
 }
