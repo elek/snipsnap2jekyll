@@ -11,10 +11,11 @@ import java.util.regex.Pattern;
 public class LineEndAndListTransformation implements Transformation {
 
     Pattern list;
+    Pattern numberedList;
     Pattern header;
 
     public LineEndAndListTransformation() {
-        this.list = Pattern.compile("^\\s*(-+)\\s+(.*)$");
+        this.list = Pattern.compile("^\\s*([-\\*]+|1\\.)\\s+(.*)$");
         this.header = Pattern.compile("^(#+)\\s+(.*)$");
     }
 
@@ -44,17 +45,25 @@ public class LineEndAndListTransformation implements Transformation {
                     b.append("\n");
                 }
                 prevIsList = true;
-                for (int i = 0; i < listMatcher.group(1).trim().length() - 1; i++) {
-                    b.append("    ");
+                if (listMatcher.group(1).contains("1")) {
+                    b.append("1.   ");
+                } else {
+                    for (int i = 0; i < listMatcher.group(1).trim().length() - 1; i++) {
+                        b.append("    ");
+                    }
+                    b.append("*   ");
+
                 }
-                b.append("*   ");
+
                 b.append(listMatcher.group(2) + "\n");
 
             } else {
-                if (prevIsList) {
+                if (prevIsList && !isEmpty(line)) {
                     b.append("\n");
                 }
                 b.append(line + "\n");
+                prevIsList = false;
+
             }
 
             prevLine = line;
