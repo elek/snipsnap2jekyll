@@ -4,6 +4,7 @@
  */
 package net.anzix.snipsnap2xwiki.migrator;
 
+import net.anzix.snipsnap2xwiki.App;
 import net.anzix.snipsnap2xwiki.MigrationContext;
 import net.anzix.snipsnap2xwiki.MigrationSet;
 import net.anzix.snipsnap2xwiki.Page;
@@ -144,6 +145,7 @@ public class SnipMigrator extends AbstractObjectMigrator {
         p.addMeta("title", "TODO");
         p.addMeta("name", "TODO");
         p.addMeta("layout", "default");
+        p.addMeta("date", App.SDF.format(new Date()));
         String content = "# TODO\n\n";
         for (String missing : getContext().getMissingPages()) {
             content += "-  " + missing + "\n";

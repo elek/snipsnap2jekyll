@@ -67,6 +67,7 @@ public class GitOutputter implements Outputter {
      */
     public void commitVersion(Page page, boolean first) throws Exception {
         File f = writeToDir(page);
+        f.setLastModified(page.getDate().getTime());
 
         AddCommand a = git.add();
         String relPath = rootDir.toURI().relativize(f.toURI()).getPath();

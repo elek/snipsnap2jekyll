@@ -38,7 +38,7 @@ public class App {
 
             MigrationContext context = new MigrationContext(newDir);
             context.init(snipSnapDumpRoot);
-            Outputter out = new DirOutputter(context);
+            Outputter out = new GitOutputter(context);
             //Migrate wiki pages
             SnipMigrator snipMigrator = new SnipMigrator(context, out);
             snipMigrator.setMigrateAttachments(false);
