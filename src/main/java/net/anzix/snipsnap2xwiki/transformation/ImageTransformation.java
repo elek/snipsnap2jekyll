@@ -1,5 +1,7 @@
 package net.anzix.snipsnap2xwiki.transformation;
 
+import net.anzix.snipsnap2xwiki.Page;
+
 /**
  * This class transforms images from format
  * <pre>
@@ -19,7 +21,7 @@ public class ImageTransformation extends MacroTransformation {
     }
 
     @Override
-    public String replace(String[] args) {
+    public String replace(String[] args, Page page) {
         String image = "";
         String link = "";
         String alt = "image";

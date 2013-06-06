@@ -22,7 +22,7 @@ public class NoMacroTransformation extends MacroTransformation {
     }
 
     @Override
-    public String replace(String[] args) {
+    public String replace(String[] args, Page page) {
         return null;
     }
 }

@@ -18,11 +18,14 @@ public class DefaultTextTransformation extends CompositeTransformation {
         transformations.add(new SecondHeaderTransformation());
         CodeTransformation firstPhase = new CodeTransformation();
         transformations.add(firstPhase);
+        transformations.add(new IgnoreMacroBlockTransformation("table"));
         transformations.add(new LineEndAndListTransformation());
         transformations.add(new SnipSnap2Markdown(context));
         transformations.add(new LinkTransformation());
         transformations.add(new ItalicTransformer());
         transformations.add(new ImageTransformation());
+        transformations.add(new ApiMacroTransformation());
+        transformations.add(new SnipTreeTransformation(context));
         transformations.add(new RemoveMacrosTransformation());
         transformations.add(new NoMacroTransformation());
         transformations.add(new CodeTransformation(firstPhase));

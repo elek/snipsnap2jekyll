@@ -55,8 +55,8 @@ public class SnipSnap2Markdown implements Transformation {
             if (context.getSnipNameCache().containsKey(originalName.toLowerCase())) {
                 originalName = context.getSnipNameCache().get(originalName.toLowerCase());
             } else {
-                originalName = "Missing";
                 context.addMissingPage(originalName);
+                originalName = "Missing";
             }
             String linkName = originalName;
 
@@ -64,13 +64,7 @@ public class SnipSnap2Markdown implements Transformation {
             if (context.getUserCache().keySet().contains(originalName)) {
                 linkName = linkName;
             }
-            if (page.getMeta("title") != null) {
-                String title = (String) page.getMeta("title");
-                int c = countOccurrences(title, '/');
-                for (int i = 0; i < c; i++) {
-                    linkName = "../" + linkName;
-                }
-            }
+            linkName = relativePrefix((String) page.getMeta("path")) + linkName;
             m.appendReplacement(sb, "[" + label + "](" + URLEncoder.encode(linkName).
                     replace("+", "%20").replace("%2F", "/") + ".html)");
 
@@ -88,5 +82,20 @@ public class SnipSnap2Markdown implements Transformation {
             }
         }
         return count;
+    }
+
+    public static String relativePrefix(String name) {
+        if (name == null) {
+
+            return "";
+        }
+        String res = "";
+        if (name != null) {
+            int c = countOccurrences(name, '/');
+            for (int i = 0; i < c; i++) {
+                res = "../" + res;
+            }
+        }
+        return res;
     }
 }

@@ -51,7 +51,7 @@ public class SnipSnap2MarkdownTest extends TestCase {
         net.anzix.snipsnap2xwiki.transformation.SnipSnap2Markdown transform = new net.anzix.snipsnap2xwiki.transformation.SnipSnap2Markdown(context);
 
         Page p = new Page();
-        p.addMeta("title","test/qwe");
+        p.addMeta("path","test/qwe");
         assertEquals("valami [oracle](../Oracle.html) valami", transform.transform("valami [oracle] valami", p));
 
         assertEquals("valami [oracle](Oracle.html) valami [J2EE](j2ee.html)", transform.transform("valami [oracle] valami [J2EE]", new Page()));
@@ -61,5 +61,8 @@ public class SnipSnap2MarkdownTest extends TestCase {
         assertEquals(" a [sun fejlesztői nap](sun%20developer%20day.html),", transform.transform(" a [sun fejlesztői nap|sun developer day],", new Page()));
 
         assertEquals("qwe<br/>\nesd", transform.transform("qwe\\\\\nesd", new Page()));
+
+        assertEquals("[no](Missing.html)", transform.transform("[no]", new Page()));
+        assertTrue(context.getMissingPages().contains("no"));
     }
 }

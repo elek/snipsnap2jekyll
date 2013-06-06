@@ -20,15 +20,11 @@ public class RemoveMacrosTransformation extends RegExpTransformation {
         ignoreList.add("label-search");
         ignoreList.add("field");
         ignoreList.add("weblog");
+        ignoreList.add("graph");
 
         //TODO
-        ignoreList.add("table");
         ignoreList.add("isbn");
-        ignoreList.add("graph");
-        ignoreList.add("autokerek");
-        ignoreList.add("snip-tree");
         ignoreList.add("snip-xtree");
-
         ignoreList.add("api");
     }
 

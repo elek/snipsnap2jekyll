@@ -10,13 +10,15 @@ public class CodeTransformationTest {
     public void test() {
         CodeTransformation one = new CodeTransformation();
         CodeTransformation two = new CodeTransformation(one);
-        String start = "{% highlight java %}";
-        String end = "{% endhighlight %}";
-        Assert.assertEquals(start + "\nstatic \\{System.out.println(\"asd\")\\}\n" + end, two.transform(one.transform("{code}\nstatic {System.out.println(\"asd\")}\n{code}", new Page()), new Page()));
+//        String start = "{% highlight java %}";
+//        String end = "{% endhighlight %}";
+        String start = "```";
+        String end = "```";
+        Assert.assertEquals(start + "\nstatic {System.out.println(\"asd\")}\n" + end, two.transform(one.transform("{code}\nstatic {System.out.println(\"asd\")}\n{code}", new Page()), new Page()));
 
         String txt = "{code}\n" +
 
-                " /**\n" +
+                " /**{%\n" +
                 "  * A metodus nev tetszoleges lehet....\n" +
                 "  * @bigyo-depend logger\n" +
                 "  */\n" +
@@ -24,11 +26,11 @@ public class CodeTransformationTest {
                 "{code}\n";
 
         String expected = start + "\n" +
-                " /**\n" +
+                " /**\\{\\%\n" +
                 "  * A metodus nev tetszoleges lehet....\n" +
                 "  * @bigyo-depend logger\n" +
                 "  */\n" +
-                "  public void setSajatLogger(Logger log) \\{\n" +
+                "  public void setSajatLogger(Logger log) {\n" +
                 end + "\n";
         Assert.assertEquals(expected, two.transform(one.transform(txt, new Page()), new Page()));
 

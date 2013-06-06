@@ -7,7 +7,7 @@ package net.anzix.snipsnap2xwiki.migrator;
 import net.anzix.snipsnap2xwiki.MigrationContext;
 import net.anzix.snipsnap2xwiki.MigrationSet;
 import net.anzix.snipsnap2xwiki.Page;
-import net.anzix.snipsnap2xwiki.transformation.Transformation;
+import net.anzix.snipsnap2xwiki.transformation.DateTransformer;
 import org.jdom.Element;
 
 import java.io.File;
@@ -37,30 +37,22 @@ public class SnipMigrator extends AbstractObjectMigrator {
         ignorePages.add("sandbox");
         ignorePages.add("snips-by-user");
         //todo
-        ignorePages.add("JMX");
-        ignorePages.add("singleton");
-        ignorePages.add("WTF/Xmas");
-        ignorePages.add("Xmas");
+        //ignorePages.add("JMX");
+        //ignorePages.add("singleton");
+        //ignorePages.add("WTF/Xmas");
+        //ignorePages.add("Xmas");
         ignorePages.add("archivum");
         ignorePages.add("oldposts");
 
 
-        steps.add(new MigrationStep("name", "name", new Transformation() {
-
-            @Override
-            public String transform(String source, Page page) {
-                return source.replaceAll("/", "");
-            }
-        }));
+        steps.add(new MigrationStep("name", "path"));
 
         steps.add(new MigrationStep("name", "title"));
-        steps.add(new MigrationStep("mUser", "contentAuthor"));
         steps.add(new MigrationStep("mUser", "author"));
         steps.add(new MigrationStep("cUser", "creator"));
 
-        steps.add(new MigrationStep("cTime", "creationDate"));
-        steps.add(new MigrationStep("mTime", "date"));
-        steps.add(new MigrationStep("mTime", "contentUpdateDate"));
+        steps.add(new MigrationStep("cTime", "creationDate", new DateTransformer()));
+        steps.add(new MigrationStep("mTime", "date", new DateTransformer()));
 
         steps.add(new MigrationStep("content", "content", getContext().getSyntaxTransformation()));
 
@@ -140,13 +132,13 @@ public class SnipMigrator extends AbstractObjectMigrator {
     public void migrate(Element root) throws Exception {
         super.migrate(root);
         try (FileWriter writer = new FileWriter(getFile("wiki", "Missing"))) {
-            writer.write("----\n");
-            writer.write("title: TODO\n");
-            writer.write("layout: default\n");
-            writer.write("----\n");
+            writer.write("---\n");
+            writer.write("title   : TODO\n");
+            writer.write("layout  : default\n");
+            writer.write("---\n");
             writer.write("# TODO\n\n");
             for (String missing : getContext().getMissingPages()) {
-                writer.write("- [" + missing + "][" + missing + "]\n");
+                writer.write("-  " + missing + "\n");
             }
         }
 

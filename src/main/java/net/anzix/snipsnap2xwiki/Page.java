@@ -36,7 +36,7 @@ public class Page {
             FileWriter writer = new FileWriter(output);
             writer.write("---\n");
             for (String key : metadata.keySet()) {
-                writer.write(String.format("%s: %s \n", key, metadata.get(key)));
+                writer.write(String.format("%-20s: %s \n", key, metadata.get(key)));
             }
             writer.write("---\n");
             writer.write(content);

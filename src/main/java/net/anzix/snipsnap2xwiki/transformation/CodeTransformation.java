@@ -40,11 +40,11 @@ public class CodeTransformation extends RegExpTransformation {
     @Override
     public String replace(Matcher m, Page page) {
         if (original != null) {
-            return "{% highlight java %}" + original.codeBlocks.poll() + "{% endhighlight %}";
+            return "```" + original.codeBlocks.poll() + "```";
         } else {
             codeBlocks.add(m.group(1).
-                    replaceAll("\\}", "\\\\}").
-                    replaceAll("\\{", "\\\\{"));
+                    replaceAll("%\\}", "\\%\\\\}").
+                    replaceAll("%\\{", "\\%\\\\{"));
             return UNIQUE_TOKEN;
 
         }
