@@ -25,6 +25,7 @@ public class DefaultTextTransformation extends CompositeTransformation {
         transformations.add(new ItalicTransformer());
         transformations.add(new ImageTransformation());
         transformations.add(new ApiMacroTransformation());
+        transformations.add(new UrlifyTransformation());
         transformations.add(new SnipTreeTransformation(context));
         transformations.add(new RemoveMacrosTransformation());
         transformations.add(new NoMacroTransformation());

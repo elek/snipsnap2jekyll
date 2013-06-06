@@ -1,4 +1,4 @@
-/*buildscript {
+buildscript {
    repositories {
      maven {
        url "https://s3-eu-west-1.amazonaws.com/anzixrepo"
@@ -7,13 +7,13 @@
        classpath 'net.anzix.build:gradle-plugins:1.0-SNAPSHOT'
      }
    }
-   }*/
+   }
 apply plugin: 'java'
 apply plugin: 'idea'
-/*apply plugin: 'pmd'
+apply plugin: 'pmd'
 apply plugin: 'build-dashboard'
 apply plugin: 'checkstyle'
-apply plugin: 'anzix-quality'*/
+apply plugin: 'anzix-quality'
 
 repositories { 
   mavenCentral();
