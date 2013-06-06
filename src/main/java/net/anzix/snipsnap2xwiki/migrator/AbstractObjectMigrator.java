@@ -6,10 +6,8 @@ package net.anzix.snipsnap2xwiki.migrator;
 
 import net.anzix.snipsnap2xwiki.MigrationContext;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -30,7 +28,10 @@ public abstract class AbstractObjectMigrator extends AbstractMigrator {
                 migrateObject(e);
             }
         }
+        migrationEnd();
     }
+
+    protected abstract void migrationEnd();
 
     protected abstract boolean includeInMigration(Element e);
 

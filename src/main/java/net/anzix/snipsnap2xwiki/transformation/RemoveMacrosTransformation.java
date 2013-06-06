@@ -16,6 +16,7 @@ public class RemoveMacrosTransformation extends RegExpTransformation {
     public RemoveMacrosTransformation() {
         super(MacroTransformation.PATTERN);
         ignoreList.add("snip-xref");
+        ignoreList.add("smip-xref");
         ignoreList.add("snips-by-user");
         ignoreList.add("label-search");
         ignoreList.add("field");
@@ -25,6 +26,7 @@ public class RemoveMacrosTransformation extends RegExpTransformation {
         //TODO
         ignoreList.add("isbn");
         ignoreList.add("snip-xtree");
+
         ignoreList.add("api");
     }
 

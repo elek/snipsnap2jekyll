@@ -10,12 +10,7 @@ import net.anzix.snipsnap2xwiki.Page;
 import net.anzix.snipsnap2xwiki.transformation.DateTransformer;
 import org.jdom.Element;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Migrate Snips (wiki pages).
@@ -28,8 +23,16 @@ public class SnipMigrator extends AbstractObjectMigrator {
 
     private MigrationSet steps = new MigrationSet();
 
-    public SnipMigrator(MigrationContext context) {
+    private Outputter output;
+
+    private List<Page> pagesToMigrate = new ArrayList<Page>();
+    private Map<String, Page> lastSaved = new HashMap<String, Page>();
+    private Map<String, Integer> lastVersion = new HashMap<String, Integer>();
+
+    public SnipMigrator(MigrationContext context, Outputter output) {
         super(context);
+        this.output = output;
+
 
         ignorePages = new HashSet();
         ignorePages.add("start");
@@ -39,8 +42,8 @@ public class SnipMigrator extends AbstractObjectMigrator {
         //todo
         //ignorePages.add("JMX");
         //ignorePages.add("singleton");
-        //ignorePages.add("WTF/Xmas");
-        //ignorePages.add("Xmas");
+        ignorePages.add("WTF/Xmas");
+        ignorePages.add("Xmas");
         ignorePages.add("archivum");
         ignorePages.add("oldposts");
 
@@ -50,6 +53,7 @@ public class SnipMigrator extends AbstractObjectMigrator {
         steps.add(new MigrationStep("name", "title"));
         steps.add(new MigrationStep("mUser", "author"));
         steps.add(new MigrationStep("cUser", "creator"));
+        steps.add(new MigrationStep("version", "version"));
 
         steps.add(new MigrationStep("cTime", "creationDate", new DateTransformer()));
         steps.add(new MigrationStep("mTime", "date", new DateTransformer()));
@@ -85,17 +89,38 @@ public class SnipMigrator extends AbstractObjectMigrator {
 
         String name = oldRoot.getChildText("name");
 
-        if (name.contains("/")) {
-            String parentName = name.substring(0, name.lastIndexOf("/"));
-//            name = name.replaceAll("/", "");
-            parentName = parentName.replaceAll("/", "");
-        }
         //TODO: Arvizturo tukorfurogep
         if (name.contains("zt") && name.contains("rf")) {
             return;
         }
-        System.out.println("Migration " + name);
+        System.out.println("Migrating " + name);
 
+        //copy properties
+        Page mainPage = createPage(oldRoot);
+        mainPage.setLatest(true);
+        mainPage.addMeta("name", name);
+        pagesToMigrate.add(mainPage);
+
+
+        Element version = oldRoot.getChild("versions");
+        if (version != null) {
+            for (Object change : version.getChildren("snip")) {
+
+                Page older = createPage((Element) change);
+                older.addMeta("name", name);
+                older.addMeta("creator", (String) mainPage.getMeta("creator"));
+                older.addMeta("creationDate", (String) mainPage.getMeta("creationDate"));
+                pagesToMigrate.add(older);
+            }
+        }
+
+    }
+
+    private Page createPage(Element oldRoot) {
+        Page newPage = new Page();
+        newPage.addMeta("layout", "wiki");
+
+        String name = oldRoot.getChildText("name");
         String cleanName = "";
         int i = 0;
         while (i < name.length()) {
@@ -108,38 +133,45 @@ public class SnipMigrator extends AbstractObjectMigrator {
             i++;
         }
         name = cleanName;
-        System.out.println(name);
-
-        Map<String, String> metaData = new HashMap<String, String>();
-
-        //copy properties
-        Page newPage = new Page();
-        newPage.addMeta("layout", "wiki");
         steps.migrate(oldRoot, newPage);
-
-
-        //write output
-        File output = getFile("wiki", name);
-        if (!output.getParentFile().exists()) {
-            output.getParentFile().mkdirs();
-        }
-        newPage.write(output);
-        getContext().pageMigratedSuccesfully("Main." + name);
-
+        return newPage;
     }
 
     @Override
     public void migrate(Element root) throws Exception {
         super.migrate(root);
-        try (FileWriter writer = new FileWriter(getFile("wiki", "Missing"))) {
-            writer.write("---\n");
-            writer.write("title   : TODO\n");
-            writer.write("layout  : default\n");
-            writer.write("---\n");
-            writer.write("# TODO\n\n");
-            for (String missing : getContext().getMissingPages()) {
-                writer.write("-  " + missing + "\n");
+        Page p = new Page();
+        p.addMeta("title", "TODO");
+        p.addMeta("name", "TODO");
+        p.addMeta("layout", "default");
+        String content = "# TODO\n\n";
+        for (String missing : getContext().getMissingPages()) {
+            content += "-  " + missing + "\n";
+        }
+        p.setContent(content);
+        output.write(p);
+
+
+    }
+
+    @Override
+    protected void migrationEnd() {
+        Collections.sort(pagesToMigrate, new Comparator<Page>() {
+            @Override
+            public int compare(Page o1, Page o2) {
+                return o1.getDate().compareTo(o2.getDate());
             }
+        });
+        for (Page p : pagesToMigrate) {
+            int version = 0;
+            if (p.getMeta("version") != null) {
+                version = Integer.parseInt((String) p.getMeta("version"));
+            } else if (lastVersion.containsKey(p.getName())) {
+                version = lastVersion.get(p.getName()) + 1;
+            }
+            lastVersion.put(p.getName(), version);
+            p.setVersion(version);
+            output.write(p);
         }
 
     }

@@ -21,6 +21,10 @@ public class DateTransformer implements Transformation {
 
     @Override
     public String transform(String source, Page page) {
-        return sdf.format(new Date(Long.parseLong(source)));
+        if (source != null && source.trim().length() > 0) {
+            return sdf.format(new Date(Long.parseLong(source)));
+        } else {
+            return source;
+        }
     }
 }

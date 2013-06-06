@@ -59,10 +59,7 @@ public abstract class AbstractMigrator {
         throw new IllegalArgumentException("No such proeprty: " + object + "+" + propertyName);
     }
 
-    protected File getFile(String space, String name) throws IOException {
-        return new File(new File(context.getOutputDir(), space), name + ".md");
 
-    }
 
     public MigrationContext getContext() {
         return context;
