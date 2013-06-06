@@ -26,9 +26,6 @@ public class DirOutputter implements Outputter {
     public void writeFile(Page page) {
         //write output
         String name = page.getName();
-        if (page.getMeta("version") != null) {
-            name += ".v" + page.getMeta("version");
-        }
         File output = getFile("wiki", name);
         if (!output.getParentFile().exists()) {
             output.getParentFile().mkdirs();

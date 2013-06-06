@@ -1,5 +1,6 @@
 package net.anzix.snipsnap2xwiki;
 
+import net.anzix.snipsnap2xwiki.migrator.DirOutputter;
 import net.anzix.snipsnap2xwiki.migrator.GitOutputter;
 import net.anzix.snipsnap2xwiki.migrator.Outputter;
 import net.anzix.snipsnap2xwiki.migrator.SnipMigrator;
@@ -37,7 +38,7 @@ public class App {
 
             MigrationContext context = new MigrationContext(newDir);
             context.init(snipSnapDumpRoot);
-            Outputter out = new GitOutputter(context);
+            Outputter out = new DirOutputter(context);
             //Migrate wiki pages
             SnipMigrator snipMigrator = new SnipMigrator(context, out);
             snipMigrator.setMigrateAttachments(false);
