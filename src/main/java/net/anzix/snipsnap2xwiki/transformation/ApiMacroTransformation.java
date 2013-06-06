@@ -13,6 +13,7 @@ public class ApiMacroTransformation extends MacroTransformation {
 
     @Override
     public String replace(String[] args, Page page) {
-        return "[" + args[0] + "](http://docs.oracle.com/javase/7/docs/api/" + args[0].replaceAll("\\.", "/") + ".html)";
+        return "[" + args[0] + "](http://docs.oracle.com/javase/7/docs/api/" +
+                args[0].replaceAll("\\.", "/") + ".html)";
     }
 }

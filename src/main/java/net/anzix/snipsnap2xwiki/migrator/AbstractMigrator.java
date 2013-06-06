@@ -60,7 +60,6 @@ public abstract class AbstractMigrator {
     }
 
 
-
     public MigrationContext getContext() {
         return context;
     }

@@ -12,9 +12,9 @@ import java.io.File;
 import java.util.*;
 
 /**
- *  Context of the migrations.
- *
- *  Contains list and indexes of the user/snip pages.
+ * Context of the migrations.
+ * <p/>
+ * Contains list and indexes of the user/snip pages.
  *
  * @author elek
  */

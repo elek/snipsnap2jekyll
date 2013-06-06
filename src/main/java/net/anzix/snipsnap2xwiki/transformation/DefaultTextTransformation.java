@@ -8,6 +8,7 @@ import net.anzix.snipsnap2xwiki.MigrationContext;
 
 /**
  * Default set of the transformations.
+ *
  * @author elek
  */
 public class DefaultTextTransformation extends CompositeTransformation {

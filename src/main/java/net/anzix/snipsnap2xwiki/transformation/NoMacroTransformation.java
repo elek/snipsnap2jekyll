@@ -16,6 +16,7 @@ public class NoMacroTransformation extends MacroTransformation {
     @Override
     public String replace(Matcher m, Page page) {
         if (!m.group(1).trim().startsWith("%") && m.group(1).trim().length() > 0) {
+            System.err.println("Unhandled macro: " + m.group(1).trim());
             //throw new IllegalArgumentException("Unhandled macro: " + m.group(1).trim());
         }
         return m.group();

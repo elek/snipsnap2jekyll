@@ -3,6 +3,9 @@ package net.anzix.snipsnap2xwiki.transformation;
 import net.anzix.snipsnap2xwiki.MigrationContext;
 import net.anzix.snipsnap2xwiki.Page;
 
+/**
+ * Transform snip-tree macros (list of sub pages).
+ */
 public class SnipTreeTransformation extends MacroTransformation {
     private MigrationContext context;
 
@@ -19,7 +22,8 @@ public class SnipTreeTransformation extends MacroTransformation {
             String res = "\n";
             for (String path : context.getSnipNameCache().values()) {
                 if (path.startsWith(args[0])) {
-                    res += "-   [" + path + "](" + SnipSnap2Markdown.relativePrefix((String)page.getMeta("title")) + path + ".html)\n";
+                    res += "-   [" + path + "](" +
+                            SnipSnap2Markdown.relativePrefix((String) page.getMeta("title")) + path + ".html)\n";
                 }
             }
             res += "\n";
